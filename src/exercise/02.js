@@ -7,8 +7,15 @@ import {Switch} from '../switch'
 function Toggle({children}) {
   const [on, setOn] = React.useState(false)
   const toggle = () => setOn(!on)
-  return React.Children.map(children,child =>
-         React.cloneElement(child,{on,toggle}),)
+   
+ return React.Children.map(children,child =>{
+     if(typeof(child.type) === 'string'){
+    return child
+  }
+   const newChild = React.cloneElement(child,{on,toggle})
+        return newChild
+  
+ })
 
   // 🐨 replace this with a call to React.Children.map and map each child in
   // props.children to a clone of that child with the props they need using
@@ -38,6 +45,7 @@ function App() {
       <Toggle>
         <ToggleOn>The button is on</ToggleOn>
         <ToggleOff>The button is off</ToggleOff>
+        <span> Hello </span>
         <ToggleButton />
       </Toggle>
     </div>
