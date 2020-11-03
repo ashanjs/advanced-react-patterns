@@ -7,19 +7,29 @@ import {Switch} from '../switch'
 // 🐨 create your ToggleContext context here
 // 📜 https://reactjs.org/docs/context.html#reactcreatecontext
 
-function Toggle({onToggle, children}) {
+const ToggleContext = React.createContext()
+
+function Toggle(props) {
   const [on, setOn] = React.useState(false)
   const toggle = () => setOn(!on)
-
+//console.log({on,toggle})
+  return <ToggleContext.Provider value={{on,toggle}} {...props}/>
   // 🐨 remove all this 💣 and instead return <ToggleContext.Provider> where
   // the value is an object that has `on` and `toggle` on it.
-  return React.Children.map(children, child => {
+ /* return React.Children.map(children, child => {
     return typeof child.type === 'string'
       ? child
       : React.cloneElement(child, {on, toggle})
-  })
+  })*/
 }
-
+function GetContext (){
+  const context = React.useContext(ToggleContext)
+  console.log(context)
+  if(!context){
+    throw new Error('GetContext must used inside <Toggle/>')
+  }
+  return context
+}
 // 🐨 we'll still get the children from props (as it's passed to us by the
 // developers using our component), but we'll get `on` implicitly from
 // ToggleContext now
@@ -27,20 +37,24 @@ function Toggle({onToggle, children}) {
 // your context won't be exposed to the user
 // 💰 `const context = useContext(ToggleContext)`
 // 📜 https://reactjs.org/docs/hooks-reference.html#usecontext
-function ToggleOn({on, children}) {
-  return on ? children : null
+function ToggleOn({children}) {
+  const {on} = GetContext()
+  return  on ? children : null
 }
 
 // 🐨 do the same thing to this that you did to the ToggleOn component
-function ToggleOff({on, children}) {
-  return on ? null : children
+function ToggleOff({ children}) {
+  const {on} = GetContext()
+   return on ? null : children
 }
 
 // 🐨 get `on` and `toggle` from the ToggleContext with `useContext`
-function ToggleButton({on, toggle, ...props}) {
+function ToggleButton({ ...props}) {
+  const {on,toggle} = GetContext()
   return <Switch on={on} onClick={toggle} {...props} />
 }
 
+//const App = () => <ToggleButton />
 function App() {
   return (
     <div>
@@ -54,6 +68,8 @@ function App() {
     </div>
   )
 }
+
+
 
 export default App
 
