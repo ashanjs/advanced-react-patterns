@@ -38,6 +38,14 @@ function useToggle({
   const onIsControlled = controlledOn != null
   const on = onIsControlled ? controlledOn : state.on
 
+  const { current: onWasControlled } = React.useRef(onIsControlled)
+  React.useEffect(() => {
+    warning(!(onIsControlled && !onWasControlled),
+      "user changes from uncontrolled to controlled")
+    warning(!(!onIsControlled && onWasControlled),
+      "user changes from controlled to uncontrolled")
+  })
+
   const hasOnChange = Boolean(onChange)
   React.useEffect(() => {
     warning(!(!hasOnChange && onIsControlled && !readOnly),
