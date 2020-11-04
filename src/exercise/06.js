@@ -25,19 +25,7 @@ function toggleReducer(state, { type, initialState }) {
     }
   }
 }
-
-function useToggle({
-  initialOn = false,
-  reducer = toggleReducer,
-  onChange,
-  on: controlledOn,
-  readOnly = false
-} = {}) {
-  const { current: initialState } = React.useRef({ on: initialOn })
-  const [state, dispatch] = React.useReducer(reducer, initialState)
-  const onIsControlled = controlledOn != null
-  const on = onIsControlled ? controlledOn : state.on
-
+function useControlledSwitchWarning(onIsControlled, onChange, readOnly) {
   const { current: onWasControlled } = React.useRef(onIsControlled)
   React.useEffect(() => {
     warning(!(onIsControlled && !onWasControlled),
@@ -51,6 +39,21 @@ function useToggle({
     warning(!(!hasOnChange && onIsControlled && !readOnly),
       "Passing on without onChange")
   }, [hasOnChange, onIsControlled, readOnly])
+}
+
+function useToggle({
+  initialOn = false,
+  reducer = toggleReducer,
+  onChange,
+  on: controlledOn,
+  readOnly = false
+} = {}) {
+  const { current: initialState } = React.useRef({ on: initialOn })
+  const [state, dispatch] = React.useReducer(reducer, initialState)
+  const onIsControlled = controlledOn != null
+  const on = onIsControlled ? controlledOn : state.on
+
+  useControlledSwitchWarning(onIsControlled, onChange, readOnly)
 
   function dispatchWithOnChange(action) {
     if (!onIsControlled) {
